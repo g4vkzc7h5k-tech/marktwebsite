@@ -276,7 +276,9 @@ th { background: #f5f4f1; font-size: 12px; text-transform: uppercase; color: var
 .badge { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
 .badge-pending { background: #fdf1d6; color: #96700c; }
 .badge-confirmed { background: #e5f6e8; color: #1e7a34; }
+.badge-preparing { background: #eae5fb; color: #5b3fb0; }
 .badge-shipped { background: #e5eefb; color: #1a5eb0; }
+.badge-delivered { background: #e0f0ec; color: #0b6e58; }
 
 .form-card {
   background: white;
@@ -318,6 +320,164 @@ footer.site-footer {
   font-size: 13px;
   border-top: 1px solid var(--color-border);
   margin-top: 40px;
+}
+
+/* ---- Bewertungskarussell ---- */
+.reviews-section {
+  padding: 50px 0 20px;
+}
+
+.reviews-carousel {
+  position: relative;
+  max-width: 520px;
+  margin: 24px auto 0;
+  min-height: 150px;
+}
+
+.review-card {
+  display: none;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  text-align: center;
+}
+.review-card.active {
+  display: block;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.review-stars {
+  color: #e0a300;
+  font-size: 18px;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.review-text {
+  font-size: 15px;
+  color: var(--color-text);
+  margin-bottom: 10px;
+}
+
+.review-category {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-muted);
+}
+
+.reviews-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.review-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-border);
+  cursor: pointer;
+}
+.review-dot.active {
+  background: var(--color-accent);
+}
+
+/* ---- Bestell-Badge (unten links, klein, schließbar) ---- */
+.purchase-badge {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 50;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  max-width: 220px;
+}
+
+.purchase-badge button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--color-muted);
+  padding: 0 2px;
+}
+
+@media (max-width: 480px) {
+  .purchase-badge { font-size: 11px; max-width: 180px; padding: 6px 10px; }
+}
+
+/* ---- Bestellverfolgung ---- */
+.tracker {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 20px 0;
+}
+
+.tracker::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 5%;
+  right: 5%;
+  height: 3px;
+  background: var(--color-border);
+  z-index: 0;
+}
+
+.tracker-step {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  text-align: center;
+}
+
+.tracker-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-border);
+  border: 3px solid var(--color-white);
+  margin: 0 auto 8px;
+}
+
+.tracker-step.done .tracker-dot {
+  background: #1e7a34;
+}
+
+.tracker-step.current .tracker-dot {
+  background: #1a1a1a;
+  box-shadow: 0 0 0 4px rgba(26,26,26,0.15);
+}
+
+.tracker-label {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.tracker-step.done .tracker-label {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .tracker-label { font-size: 10px; }
 }
 
 @media (max-width: 720px) {
