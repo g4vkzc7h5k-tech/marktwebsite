@@ -1,22 +1,41 @@
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT || 587),
-  secure: Number(process.env.SMTP_PORT) === 465,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  connectionTimeout: 8000, // max. 8 Sek. warten, statt endlos hängen zu bleiben
-  greetingTimeout: 8000,
-  socketTimeout: 8000,
-});
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL;
 
 const SHOP_NAME = process.env.SHOP_NAME || "Mein Shop";
-const SHOP_EMAIL = process.env.SHOP_EMAIL || process.env.SMTP_USER;
+const SHOP_EMAIL = process.env.SHOP_EMAIL || BREVO_SENDER_EMAIL;
 const ADMIN_NOTIFICATION_EMAIL =
   process.env.ADMIN_NOTIFICATION_EMAIL || "e7032413@gmail.com";
+
+// Verschickt eine E-Mail über die Brevo-API (HTTPS, Port 443) statt über
+// klassisches SMTP. Das umgeht das Problem, dass Cloud-Hoster wie Render
+// von Gmail & Co. beim direkten SMTP-Verbindungsaufbau oft blockiert werden.
+async function sendEmail({ to, subject, html }) {
+  if (!BREVO_API_KEY || !BREVO_SENDER_EMAIL) {
+    throw new Error(
+      "BREVO_API_KEY oder BREVO_SENDER_EMAIL ist nicht gesetzt (Environment Variables prüfen)."
+    );
+  }
+
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "api-key": BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { name: SHOP_NAME, email: BREVO_SENDER_EMAIL },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Brevo API Fehler (Status ${res.status}): ${text}`);
+  }
+}
 
 function baseLayout(innerHtml) {
   return `
@@ -93,8 +112,7 @@ async function sendOrderReceivedEmail(order) {
     </p>
   `);
 
-  await transporter.sendMail({
-    from: process.env.FROM_EMAIL,
+  await sendEmail({
     to: order.email,
     subject: `Bestellbestätigung – Eingang deiner Bestellung #${order.id}`,
     html,
@@ -119,15 +137,12 @@ async function sendOrderConfirmedEmail(order) {
     </p>
   `);
 
-  await transporter.sendMail({
-    from: process.env.FROM_EMAIL,
+  await sendEmail({
     to: order.email,
     subject: `Zahlung bestätigt – Bestellung #${order.id} wird bearbeitet`,
     html,
   });
 }
-
-module.exports = { sendOrderReceivedEmail, sendOrderConfirmedEmail, sendAdminNewOrderEmail };
 
 async function sendAdminNewOrderEmail(order) {
   const name = greetingName(order);
@@ -155,10 +170,11 @@ async function sendAdminNewOrderEmail(order) {
     </p>
   `);
 
-  await transporter.sendMail({
-    from: process.env.FROM_EMAIL,
+  await sendEmail({
     to: ADMIN_NOTIFICATION_EMAIL,
     subject: `Neue Bestellung #${order.id} (${order.total.toFixed(2)} €)`,
     html,
   });
 }
+
+module.exports = { sendOrderReceivedEmail, sendOrderConfirmedEmail, sendAdminNewOrderEmail };
