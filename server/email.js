@@ -1,39 +1,48 @@
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
-const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL;
+const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
+const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
+const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
 
 const SHOP_NAME = process.env.SHOP_NAME || "Mein Shop";
-const SHOP_EMAIL = process.env.SHOP_EMAIL || BREVO_SENDER_EMAIL;
+const SHOP_EMAIL = process.env.SHOP_EMAIL || "";
 const ADMIN_NOTIFICATION_EMAIL =
   process.env.ADMIN_NOTIFICATION_EMAIL || "e7032413@gmail.com";
 
-// Verschickt eine E-Mail über die Brevo-API (HTTPS, Port 443) statt über
-// klassisches SMTP. Das umgeht das Problem, dass Cloud-Hoster wie Render
-// von Gmail & Co. beim direkten SMTP-Verbindungsaufbau oft blockiert werden.
+// Verschickt eine E-Mail über die EmailJS-API (HTTPS, Port 443), die im
+// Hintergrund dein verknüpftes Gmail-Konto zum Versenden nutzt. Umgeht damit
+// die SMTP-Blockade, die Render/Google bei direkter SMTP-Verbindung zeigt,
+// UND braucht (anders als Brevo) keine eigene Domain-Verifizierung.
 async function sendEmail({ to, subject, html }) {
-  if (!BREVO_API_KEY || !BREVO_SENDER_EMAIL) {
+  if (
+    !EMAILJS_SERVICE_ID ||
+    !EMAILJS_TEMPLATE_ID ||
+    !EMAILJS_PUBLIC_KEY ||
+    !EMAILJS_PRIVATE_KEY
+  ) {
     throw new Error(
-      "BREVO_API_KEY oder BREVO_SENDER_EMAIL ist nicht gesetzt (Environment Variables prüfen)."
+      "EmailJS Environment Variables fehlen (EMAILJS_SERVICE_ID / EMAILJS_TEMPLATE_ID / EMAILJS_PUBLIC_KEY / EMAILJS_PRIVATE_KEY)."
     );
   }
 
-  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+  const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      "api-key": BREVO_API_KEY,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      sender: { name: SHOP_NAME, email: BREVO_SENDER_EMAIL },
-      to: [{ email: to }],
-      subject,
-      htmlContent: html,
+      service_id: EMAILJS_SERVICE_ID,
+      template_id: EMAILJS_TEMPLATE_ID,
+      user_id: EMAILJS_PUBLIC_KEY,
+      accessToken: EMAILJS_PRIVATE_KEY,
+      template_params: {
+        to_email: to,
+        subject,
+        message_html: html,
+      },
     }),
   });
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Brevo API Fehler (Status ${res.status}): ${text}`);
+    throw new Error(`EmailJS Fehler (Status ${res.status}): ${text}`);
   }
 }
 
