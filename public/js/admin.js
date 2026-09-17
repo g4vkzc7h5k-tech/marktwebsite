@@ -253,8 +253,20 @@ function filterOrders() {
 function renderOrdersTable(orders) {
   const list = document.getElementById("orders-list");
 
-  const badgeClass = { pending: "badge-pending", confirmed: "badge-confirmed", shipped: "badge-shipped" };
-  const badgeText = { pending: "Ausstehend", confirmed: "Bestätigt", shipped: "Versendet" };
+  const badgeClass = {
+    pending: "badge-pending",
+    confirmed: "badge-confirmed",
+    preparing: "badge-preparing",
+    shipped: "badge-shipped",
+    delivered: "badge-delivered",
+  };
+  const badgeText = {
+    pending: "Ausstehend",
+    confirmed: "Bestätigt",
+    preparing: "Wird vorbereitet",
+    shipped: "Versendet",
+    delivered: "Angekommen",
+  };
 
   if (!orders.length) {
     list.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#6b6b6b;">Keine Bestellungen gefunden.</td></tr>`;
@@ -280,7 +292,17 @@ function renderOrdersTable(orders) {
         }
         ${
           o.status === "confirmed"
+            ? `<button class="btn btn-outline btn-small" onclick="prepareOrder('${o.id}')">Wird vorbereitet</button>`
+            : ""
+        }
+        ${
+          o.status === "preparing"
             ? `<button class="btn btn-outline btn-small" onclick="shipOrder('${o.id}')">Als versendet markieren</button>`
+            : ""
+        }
+        ${
+          o.status === "shipped"
+            ? `<button class="btn btn-outline btn-small" onclick="deliverOrder('${o.id}')">Als angekommen markieren</button>`
             : ""
         }
       </td>
@@ -294,8 +316,18 @@ async function confirmOrder(id) {
   loadOrdersAdmin();
 }
 
+async function prepareOrder(id) {
+  await fetch(`/api/admin/orders/${id}/prepare`, { method: "POST" });
+  loadOrdersAdmin();
+}
+
 async function shipOrder(id) {
   await fetch(`/api/admin/orders/${id}/ship`, { method: "POST" });
+  loadOrdersAdmin();
+}
+
+async function deliverOrder(id) {
+  await fetch(`/api/admin/orders/${id}/deliver`, { method: "POST" });
   loadOrdersAdmin();
 }
 
