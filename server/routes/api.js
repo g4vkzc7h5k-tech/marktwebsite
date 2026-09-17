@@ -1,7 +1,7 @@
 const express = require("express");
 const { v4: uuidv4 } = require("uuid");
 const { readData, writeData } = require("../db");
-const { sendOrderReceivedEmail } = require("../email");
+const { sendOrderReceivedEmail, sendAdminNewOrderEmail } = require("../email");
 const paypal = require("../paypal");
 
 const router = express.Router();
@@ -116,6 +116,9 @@ router.post("/orders/coupon", async (req, res) => {
     await sendOrderReceivedEmail(order).catch((e) =>
       console.error("E-Mail-Fehler (Eingangsbestätigung):", e)
     );
+    await sendAdminNewOrderEmail(order).catch((e) =>
+      console.error("E-Mail-Fehler (Admin-Benachrichtigung):", e)
+    );
 
     res.json({ success: true, orderId: order.id });
   } catch (e) {
@@ -169,6 +172,9 @@ router.post("/paypal/capture-order", async (req, res) => {
 
     await sendOrderReceivedEmail(order).catch((e) =>
       console.error("E-Mail-Fehler (Eingangsbestätigung):", e)
+    );
+    await sendAdminNewOrderEmail(order).catch((e) =>
+      console.error("E-Mail-Fehler (Admin-Benachrichtigung):", e)
     );
 
     res.json({ success: true, orderId: order.id, status: order.status });
