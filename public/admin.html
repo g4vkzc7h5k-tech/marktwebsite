@@ -31,6 +31,7 @@
       <div id="nav-products" class="admin-nav-item" onclick="showSection('products')">Produkte</div>
       <div id="nav-categories" class="admin-nav-item" onclick="showSection('categories')">Kategorien</div>
       <div id="nav-coupons" class="admin-nav-item" onclick="showSection('coupons')">Gutscheine</div>
+      <div id="nav-reviews" class="admin-nav-item" onclick="showSection('reviews')">Bewertungen</div>
       <div class="admin-nav-item" onclick="logout()" style="margin-top:20px;color:#e04b4b;">Ausloggen</div>
     </nav>
 
@@ -39,6 +40,13 @@
       <!-- Bestellungen -->
       <section id="section-orders" class="admin-section active">
         <h2>Bestellungen</h2>
+        <input
+          type="text"
+          id="order-search"
+          placeholder="Nach Bestellnummer oder E-Mail suchen..."
+          style="max-width:340px;"
+          oninput="filterOrders()"
+        >
         <table>
           <thead>
             <tr>
@@ -129,6 +137,37 @@
         <table>
           <thead><tr><th>Code</th><th>Wert</th><th>Status</th><th>Aktion</th></tr></thead>
           <tbody id="coupons-list"></tbody>
+        </table>
+      </section>
+
+      <!-- Bewertungen -->
+      <section id="section-reviews" class="admin-section">
+        <h2>Bewertungen</h2>
+        <p style="color:#6b6b6b; font-size:14px; max-width:600px;">
+          Trage hier echte Kundenbewertungen ein (z. B. wenn dir ein Kunde per
+          E-Mail oder Nachricht ein Feedback geschickt hat). Sie erscheinen
+          automatisch im durchlaufenden Karussell auf der Startseite.
+        </p>
+
+        <div class="form-card">
+          <h3 style="margin-top:0;">Neue Bewertung</h3>
+          <form onsubmit="addReview(event)">
+            <label for="new-review-category">Kategorie / Produkt</label>
+            <input type="text" id="new-review-category" placeholder="z. B. BH" required>
+
+            <label for="new-review-text">Bewertungstext</label>
+            <textarea id="new-review-text" rows="3" required></textarea>
+
+            <label for="new-review-stars">Sterne (1–5)</label>
+            <input type="number" id="new-review-stars" min="1" max="5" value="5" required>
+
+            <button class="btn">Hinzufügen</button>
+          </form>
+        </div>
+
+        <table>
+          <thead><tr><th>Kategorie</th><th>Text</th><th>Sterne</th><th>Aktion</th></tr></thead>
+          <tbody id="reviews-list"></tbody>
         </table>
       </section>
 
