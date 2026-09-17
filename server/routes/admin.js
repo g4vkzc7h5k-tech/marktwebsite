@@ -152,18 +152,19 @@ router.get("/orders", (req, res) => {
   res.json(orders);
 });
 
-router.post("/orders/:id/confirm", async (req, res) => {
+router.post("/orders/:id/confirm", (req, res) => {
   const orders = readData("orders");
   const order = orders.find((o) => o.id === req.params.id);
   if (!order) return res.status(404).json({ error: "Bestellung nicht gefunden." });
   order.status = "confirmed";
   writeData("orders", orders);
-  try {
-    await sendOrderConfirmedEmail(order);
-  } catch (e) {
-    console.error("E-Mail-Fehler (Bestätigung):", e);
-  }
+
+  // Sofort antworten, E-Mail läuft im Hintergrund weiter.
   res.json({ success: true });
+
+  sendOrderConfirmedEmail(order).catch((e) =>
+    console.error("E-Mail-Fehler (Bestätigung):", e)
+  );
 });
 
 router.post("/orders/:id/prepare", (req, res) => {
