@@ -197,7 +197,7 @@ async function loadPaypalSdk() {
   if (!clientId) return;
   return new Promise((resolve) => {
     const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=EUR`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=EUR&disable-funding=card,sepa,sofort,bancontact,giropay,eps,ideal,mybank,p24,blik,venmo,paylater`;
     script.onload = resolve;
     script.onerror = resolve;
     document.head.appendChild(script);
