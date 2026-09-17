@@ -8,6 +8,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  connectionTimeout: 8000, // max. 8 Sek. warten, statt endlos hängen zu bleiben
+  greetingTimeout: 8000,
+  socketTimeout: 8000,
 });
 
 const SHOP_NAME = process.env.SHOP_NAME || "Mein Shop";
