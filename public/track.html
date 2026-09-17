@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bestellung verfolgen – Elisselling</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo">Elisselling</a>
+      <div class="header-actions">
+        <a href="/shop.html" class="btn btn-outline">Shop</a>
+        <a href="/cart.html" class="btn">
+          Warenkorb <span id="cart-count" class="cart-count"></span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container" style="padding:50px 0; max-width:600px;">
+    <h1>Bestellung verfolgen</h1>
+    <p style="color:#6b6b6b;">Gib deine Bestellnummer und die bei der Bestellung verwendete E-Mail-Adresse ein.</p>
+
+    <div id="message-box" class="message-box" style="display:none;"></div>
+
+    <form id="track-form" onsubmit="trackOrder(event)">
+      <label for="track-order-id">Bestellnummer</label>
+      <input type="text" id="track-order-id" placeholder="z. B. A1B2C3D4" required>
+
+      <label for="track-email">E-Mail-Adresse</label>
+      <input type="email" id="track-email" placeholder="deine@email.de" required>
+
+      <button class="btn" style="width:100%;">Verfolgen</button>
+    </form>
+
+    <div id="tracking-result" style="display:none; margin-top:32px;">
+      <div class="tracker">
+        <div class="tracker-step" data-step="confirmed">
+          <div class="tracker-dot"></div>
+          <div class="tracker-label">Bezahlt &amp; bestätigt</div>
+        </div>
+        <div class="tracker-step" data-step="preparing">
+          <div class="tracker-dot"></div>
+          <div class="tracker-label">Wird vorbereitet</div>
+        </div>
+        <div class="tracker-step" data-step="shipped">
+          <div class="tracker-dot"></div>
+          <div class="tracker-label">Versendet</div>
+        </div>
+        <div class="tracker-step" data-step="delivered">
+          <div class="tracker-dot"></div>
+          <div class="tracker-label">Angekommen</div>
+        </div>
+      </div>
+
+      <div class="summary-box" style="margin-top:24px;">
+        <div id="tracking-items"></div>
+        <div class="summary-row summary-total">
+          <span>Gesamt</span>
+          <span id="tracking-total"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      &copy; 2026 Elisselling. Alle Rechte vorbehalten.
+      <div style="margin-top:8px;">
+        <a href="/widerruf.html">Widerruf &amp; Rückgabe</a> ·
+        <a href="/datenschutz.html">Datenschutz</a> ·
+        <a href="/agb.html">AGB</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/track.js"></script>
+</body>
+</html>
