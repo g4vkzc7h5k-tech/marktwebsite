@@ -53,13 +53,10 @@ router.post("/orders/coupon", async (req, res) => {
       return res.status(400).json({ error: "Fehlende Angaben." });
     }
 
-    const coupons = readData("coupons");
-    const coupon = coupons.find(
-      (c) => c.code.toLowerCase() === String(couponCode).toLowerCase()
-    );
-    if (!coupon) return res.status(404).json({ error: "Gutschein nicht gefunden." });
-    if (coupon.used) return res.status(400).json({ error: "Gutschein wurde bereits verwendet." });
-
+    // Der Code wird bewusst NICHT gegen eine Liste geprüft. Er wird
+    // einfach übernommen, wie der Kunde ihn eingegeben hat, und im
+    // Dashboard angezeigt. Der Admin prüft selbst, ob es "sein" Code
+    // ist, bevor er die Bestellung bestätigt.
     const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
 
     const order = {
@@ -69,7 +66,7 @@ router.post("/orders/coupon", async (req, res) => {
       shipping: shipping || null,
       total,
       paymentMethod: "coupon",
-      couponCode: coupon.code,
+      couponCode: couponCode,
       status: "pending", // wartet auf manuelle Bestätigung im Dashboard
       createdAt: new Date().toISOString(),
     };
@@ -77,11 +74,6 @@ router.post("/orders/coupon", async (req, res) => {
     const orders = readData("orders");
     orders.push(order);
     writeData("orders", orders);
-
-    // Gutschein als "in Verwendung" markieren, damit er nicht doppelt genutzt wird
-    coupon.used = true;
-    coupon.orderId = order.id;
-    writeData("coupons", coupons);
 
     await sendOrderReceivedEmail(order).catch((e) =>
       console.error("E-Mail-Fehler (Eingangsbestätigung):", e)
