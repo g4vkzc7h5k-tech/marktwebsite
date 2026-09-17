@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop – Mein Shop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo">Mein Shop</a>
+      <div class="header-actions">
+        <a href="/shop.html" class="btn btn-outline">Shop</a>
+        <a href="/cart.html" class="btn">
+          Warenkorb <span id="cart-count" class="cart-count"></span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="shop-layout">
+      <aside class="filters">
+        <h3>Kategorien</h3>
+        <div id="category-filters"></div>
+      </aside>
+
+      <main>
+        <div id="product-grid" class="product-grid">
+          <!-- Produkte werden automatisch aus dem Admin-Dashboard geladen -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      &copy; 2026 Mein Shop. Alle Rechte vorbehalten.
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/shop.js"></script>
+</body>
+</html>

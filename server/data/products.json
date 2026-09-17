@@ -1,0 +1,11 @@
+[
+  {
+    "id": "beispiel-produkt-1",
+    "title": "Beispielprodukt (bitte im Dashboard bearbeiten oder löschen)",
+    "description": "Das ist ein Beispieltext. Bearbeite oder lösche dieses Produkt im Admin-Dashboard unter /admin.html.",
+    "price": 19.99,
+    "category": "socken",
+    "images": [],
+    "active": true
+  }
+]

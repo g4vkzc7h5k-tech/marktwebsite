@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard – Mein Shop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- ---------- LOGIN ---------- -->
+  <div id="login-screen" class="login-screen" style="display:none;">
+    <div class="login-box">
+      <h2>Admin-Login</h2>
+      <form onsubmit="login(event)">
+        <label for="login-username">Benutzername</label>
+        <input type="text" id="login-username" required>
+        <label for="login-password">Passwort</label>
+        <input type="password" id="login-password" required>
+        <div id="login-error" style="color:#b02a2a;font-size:13px;margin-bottom:12px;"></div>
+        <button class="btn" style="width:100%;">Einloggen</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ---------- DASHBOARD ---------- -->
+  <div id="dashboard" class="admin-layout" style="display:none;">
+    <nav class="admin-sidebar">
+      <h2>Dashboard</h2>
+      <div id="nav-orders" class="admin-nav-item active" onclick="showSection('orders')">Bestellungen</div>
+      <div id="nav-products" class="admin-nav-item" onclick="showSection('products')">Produkte</div>
+      <div id="nav-categories" class="admin-nav-item" onclick="showSection('categories')">Kategorien</div>
+      <div id="nav-coupons" class="admin-nav-item" onclick="showSection('coupons')">Gutscheine</div>
+      <div class="admin-nav-item" onclick="logout()" style="margin-top:20px;color:#e04b4b;">Ausloggen</div>
+    </nav>
+
+    <main class="admin-main">
+
+      <!-- Bestellungen -->
+      <section id="section-orders" class="admin-section active">
+        <h2>Bestellungen</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Nr.</th><th>E-Mail</th><th>Artikel</th><th>Summe</th><th>Zahlung</th><th>Status</th><th>Datum</th><th>Aktion</th>
+            </tr>
+          </thead>
+          <tbody id="orders-list"></tbody>
+        </table>
+      </section>
+
+      <!-- Produkte -->
+      <section id="section-products" class="admin-section">
+        <h2>Produkte</h2>
+
+        <div class="form-card">
+          <h3 style="margin-top:0;">Produkt hinzufügen / bearbeiten</h3>
+          <form id="product-form" onsubmit="saveProduct(event)">
+            <input type="hidden" id="product-id">
+
+            <label for="product-title">Titel *</label>
+            <input type="text" id="product-title" required>
+
+            <label for="product-description">Beschreibung</label>
+            <textarea id="product-description" rows="4"></textarea>
+
+            <label for="product-price">Preis (€) *</label>
+            <input type="number" id="product-price" step="0.01" min="0" required>
+
+            <label for="product-category">Kategorie *</label>
+            <select id="product-category" required></select>
+
+            <label>
+              <input type="checkbox" id="product-active" style="width:auto;display:inline-block;" checked>
+              Produkt sichtbar / aktiv
+            </label>
+
+            <label for="product-image-upload" style="margin-top:12px;">Bilder hochladen</label>
+            <input type="file" id="product-image-upload" accept="image/*" onchange="uploadImage(event)">
+            <div id="image-thumbs" class="image-thumbs"></div>
+
+            <button type="submit" class="btn">Speichern</button>
+            <button type="button" class="btn btn-outline" onclick="resetProductForm()">Formular leeren</button>
+          </form>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Bild</th><th>Titel</th><th>Kategorie</th><th>Preis</th><th>Status</th><th>Aktion</th></tr>
+          </thead>
+          <tbody id="products-list"></tbody>
+        </table>
+      </section>
+
+      <!-- Kategorien -->
+      <section id="section-categories" class="admin-section">
+        <h2>Kategorien</h2>
+
+        <div class="form-card">
+          <h3 style="margin-top:0;">Neue Kategorie</h3>
+          <form onsubmit="addCategory(event)">
+            <label for="new-category-name">Name</label>
+            <input type="text" id="new-category-name" placeholder="z. B. Strandtücher" required>
+            <button class="btn">Hinzufügen</button>
+          </form>
+        </div>
+
+        <table>
+          <thead><tr><th>Name</th><th>ID</th><th>Aktion</th></tr></thead>
+          <tbody id="categories-list"></tbody>
+        </table>
+      </section>
+
+      <!-- Gutscheine -->
+      <section id="section-coupons" class="admin-section">
+        <h2>Gutscheine</h2>
+
+        <div class="form-card">
+          <h3 style="margin-top:0;">Neuen Gutschein erstellen</h3>
+          <form onsubmit="addCoupon(event)">
+            <label for="new-coupon-code">Code</label>
+            <input type="text" id="new-coupon-code" placeholder="z. B. GUTSCHEIN-1234" required>
+            <label for="new-coupon-value">Wert (€)</label>
+            <input type="number" id="new-coupon-value" step="0.01" min="0" required>
+            <button class="btn">Erstellen</button>
+          </form>
+        </div>
+
+        <table>
+          <thead><tr><th>Code</th><th>Wert</th><th>Status</th><th>Aktion</th></tr></thead>
+          <tbody id="coupons-list"></tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

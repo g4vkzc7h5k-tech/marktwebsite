@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warenkorb – Mein Shop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo">Mein Shop</a>
+      <div class="header-actions">
+        <a href="/shop.html" class="btn btn-outline">Shop</a>
+        <a href="/cart.html" class="btn">
+          Warenkorb <span id="cart-count" class="cart-count"></span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="cart-layout">
+      <div>
+        <h2>Dein Warenkorb</h2>
+        <div id="message-box" class="message-box" style="display:none;"></div>
+        <div id="cart-items"></div>
+      </div>
+
+      <div id="cart-summary" class="summary-box">
+        <div class="summary-row summary-total">
+          <span>Gesamt</span>
+          <span id="summary-total">0,00 €</span>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #e5e2dd;margin:16px 0;">
+
+        <h3 style="margin-top:0;">Deine Angaben</h3>
+        <label for="checkout-email">E-Mail-Adresse *</label>
+        <input type="email" id="checkout-email" placeholder="deine@email.de" required>
+
+        <label for="checkout-name">Name</label>
+        <input type="text" id="checkout-name" placeholder="Vor- und Nachname">
+
+        <label for="checkout-address">Lieferadresse</label>
+        <textarea id="checkout-address" rows="3" placeholder="Straße, PLZ, Ort"></textarea>
+
+        <h3>Zahlungsart</h3>
+        <div class="payment-tabs">
+          <div id="tab-paypal" class="payment-tab active" onclick="selectPaymentMethod('paypal')">PayPal</div>
+          <div id="tab-coupon" class="payment-tab" onclick="selectPaymentMethod('coupon')">Gutscheinkarte</div>
+        </div>
+
+        <div id="paypal-section">
+          <div id="paypal-buttons"></div>
+        </div>
+
+        <div id="coupon-section" style="display:none;">
+          <label for="coupon-code">Gutscheincode</label>
+          <input type="text" id="coupon-code" placeholder="z. B. GUTSCHEIN-1234">
+          <button class="btn" style="width:100%;" onclick="submitCouponOrder()">Mit Gutschein bezahlen</button>
+          <p style="font-size:12px;color:#6b6b6b;margin-top:8px;">
+            Deine Bestellung wird nach Eingang manuell geprüft und dir per E-Mail bestätigt.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      &copy; 2026 Mein Shop. Alle Rechte vorbehalten.
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/cart.js"></script>
+</body>
+</html>
