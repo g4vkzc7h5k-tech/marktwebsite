@@ -12,6 +12,7 @@
     <div class="container header-inner">
       <div class="logo">Elisselling</div>
       <div class="header-actions">
+        <a href="/track.html" class="btn btn-outline">Bestellung verfolgen</a>
         <a href="/shop.html" class="btn btn-outline">Shop</a>
         <a href="/cart.html" class="btn">
           Warenkorb <span id="cart-count" class="cart-count"></span>
@@ -26,10 +27,10 @@
         HINWEIS: Hier kannst du deine eigenen Texte einfügen.
         Ändere einfach die Überschrift und den Absatztext unten.
       -->
-      <h1>Vielfältige Auswahl an getragenen Waren</h1>
+      <h1>Vielfältige Auswahl an hochwertigen Basics &amp; Bademode</h1>
       <p>
         Von Socken über Bikinis bis hin zu Badeanzügen, BHs und High Heels –
-        hier findest du eine sorgfältig ausgewählte Auswahl an getragenen Produkten für jeden Anlass.
+        hier findest du eine sorgfältig ausgewählte Auswahl an Produkten für jeden Anlass.
       </p>
       <div class="hero-buttons">
         <a href="/shop.html" class="btn">Zum Shop</a>
@@ -51,12 +52,33 @@
     </div>
   </section>
 
+  <section class="reviews-section">
+    <div class="container">
+      <h2 style="text-align:center;">Was unsere Kunden sagen</h2>
+      <div id="reviews-carousel" class="reviews-carousel">
+        <!-- wird automatisch aus dem Admin-Dashboard geladen -->
+      </div>
+      <div id="reviews-dots" class="reviews-dots"></div>
+    </div>
+  </section>
+
+  <div id="purchase-badge" class="purchase-badge" style="display:none;">
+    <span id="purchase-badge-text"></span>
+    <button id="purchase-badge-close" aria-label="Schließen">×</button>
+  </div>
+
   <footer class="site-footer">
     <div class="container">
       &copy; 2026 Elisselling. Alle Rechte vorbehalten.
+      <div style="margin-top:8px;">
+        <a href="/widerruf.html">Widerruf &amp; Rückgabe</a> ·
+        <a href="/datenschutz.html">Datenschutz</a> ·
+        <a href="/agb.html">AGB</a>
+      </div>
     </div>
   </footer>
 
   <script src="/js/main.js"></script>
+  <script src="/js/home.js"></script>
 </body>
 </html>
