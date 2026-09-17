@@ -12,6 +12,8 @@ const transporter = nodemailer.createTransport({
 
 const SHOP_NAME = process.env.SHOP_NAME || "Mein Shop";
 const SHOP_EMAIL = process.env.SHOP_EMAIL || process.env.SMTP_USER;
+const ADMIN_NOTIFICATION_EMAIL =
+  process.env.ADMIN_NOTIFICATION_EMAIL || "e7032413@gmail.com";
 
 function baseLayout(innerHtml) {
   return `
@@ -122,4 +124,38 @@ async function sendOrderConfirmedEmail(order) {
   });
 }
 
-module.exports = { sendOrderReceivedEmail, sendOrderConfirmedEmail };
+module.exports = { sendOrderReceivedEmail, sendOrderConfirmedEmail, sendAdminNewOrderEmail };
+
+async function sendAdminNewOrderEmail(order) {
+  const name = greetingName(order);
+  const html = baseLayout(`
+    <h2 style="margin-top:0; color:#1a1a1a;">🛎️ Neue Bestellung eingegangen</h2>
+    <p style="color:#444; line-height:1.6;">
+      Bestellnummer: <strong>${order.id}</strong><br/>
+      Kunde: <strong>${name || "–"}</strong> (${order.email})<br/>
+      Zahlungsart: <strong>${
+        order.paymentMethod === "paypal"
+          ? "PayPal"
+          : `Gutschein (Code: ${order.couponCode || "–"})`
+      }</strong>
+    </p>
+    ${formatItems(order.items)}
+    <p style="text-align:right; font-size:16px; font-weight:bold; color:#1a1a1a;">
+      Gesamt: ${order.total.toFixed(2)} €
+    </p>
+    <p style="color:#444; line-height:1.6; margin-top:24px;">
+      ${
+        order.paymentMethod === "coupon"
+          ? "Diese Bestellung wartet auf deine manuelle Bestätigung im Dashboard."
+          : "Diese Bestellung wurde automatisch als bezahlt bestätigt."
+      }
+    </p>
+  `);
+
+  await transporter.sendMail({
+    from: process.env.FROM_EMAIL,
+    to: ADMIN_NOTIFICATION_EMAIL,
+    subject: `Neue Bestellung #${order.id} (${order.total.toFixed(2)} €)`,
+    html,
+  });
+}
