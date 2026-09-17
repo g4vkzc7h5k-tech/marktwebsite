@@ -53,6 +53,7 @@ function initDashboard() {
   loadProductsAdmin();
   loadOrdersAdmin();
   loadCouponsAdmin();
+  loadReviewsAdmin();
 }
 
 // ---------- Kategorien ----------
@@ -227,13 +228,38 @@ async function uploadImage(e) {
 }
 
 // ---------- Bestellungen ----------
+let allOrders = [];
+
 async function loadOrdersAdmin() {
   const res = await fetch("/api/admin/orders");
-  const orders = await res.json();
+  allOrders = await res.json();
+  renderOrdersTable(allOrders);
+}
+
+function filterOrders() {
+  const query = document.getElementById("order-search").value.trim().toLowerCase();
+  if (!query) {
+    renderOrdersTable(allOrders);
+    return;
+  }
+  const filtered = allOrders.filter(
+    (o) =>
+      o.id.toLowerCase().includes(query) ||
+      o.email.toLowerCase().includes(query)
+  );
+  renderOrdersTable(filtered);
+}
+
+function renderOrdersTable(orders) {
   const list = document.getElementById("orders-list");
 
   const badgeClass = { pending: "badge-pending", confirmed: "badge-confirmed", shipped: "badge-shipped" };
   const badgeText = { pending: "Ausstehend", confirmed: "Bestätigt", shipped: "Versendet" };
+
+  if (!orders.length) {
+    list.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#6b6b6b;">Keine Bestellungen gefunden.</td></tr>`;
+    return;
+  }
 
   list.innerHTML = orders
     .map(
@@ -317,3 +343,48 @@ async function deleteCoupon(code) {
 }
 
 document.addEventListener("DOMContentLoaded", checkLogin);
+
+// ---------- Bewertungen ----------
+async function loadReviewsAdmin() {
+  const res = await fetch("/api/admin/reviews");
+  const reviews = await res.json();
+  const list = document.getElementById("reviews-list");
+  list.innerHTML = reviews
+    .map(
+      (r) => `
+    <tr>
+      <td>${r.category}</td>
+      <td>${r.text}</td>
+      <td>${"★".repeat(r.stars)}${"☆".repeat(5 - r.stars)}</td>
+      <td><button class="btn btn-outline btn-small" onclick="deleteReview('${r.id}')">Löschen</button></td>
+    </tr>`
+    )
+    .join("");
+}
+
+async function addReview(e) {
+  e.preventDefault();
+  const category = document.getElementById("new-review-category").value.trim();
+  const text = document.getElementById("new-review-text").value.trim();
+  const stars = document.getElementById("new-review-stars").value;
+  const res = await fetch("/api/admin/reviews", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ category, text, stars }),
+  });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById("new-review-category").value = "";
+    document.getElementById("new-review-text").value = "";
+    document.getElementById("new-review-stars").value = 5;
+    loadReviewsAdmin();
+  } else {
+    alert(data.error);
+  }
+}
+
+async function deleteReview(id) {
+  if (!confirm("Bewertung wirklich löschen?")) return;
+  await fetch(`/api/admin/reviews/${id}`, { method: "DELETE" });
+  loadReviewsAdmin();
+}
