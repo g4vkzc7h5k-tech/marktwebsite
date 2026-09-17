@@ -11,6 +11,44 @@ router.get("/paypal/client-id", (req, res) => {
   res.json({ clientId: process.env.PAYPAL_CLIENT_ID || "" });
 });
 
+// ---- Bewertungen (öffentlich lesbar) ----
+router.get("/reviews", (req, res) => {
+  res.json(readData("reviews"));
+});
+
+// ---- Echte Bestellzahl (nur bestätigte/versendete Bestellungen zählen) ----
+router.get("/stats/order-count", (req, res) => {
+  const orders = readData("orders");
+  const count = orders.filter(
+    (o) => o.status === "confirmed" || o.status === "shipped"
+  ).length;
+  res.json({ count });
+});
+
+// ---- Bestellverfolgung für Kunden (Bestellnummer + E-Mail erforderlich) ----
+router.post("/track", (req, res) => {
+  const { orderId, email } = req.body;
+  if (!orderId || !email) {
+    return res.status(400).json({ error: "Bitte Bestellnummer und E-Mail-Adresse angeben." });
+  }
+  const orders = readData("orders");
+  const order = orders.find(
+    (o) =>
+      o.id.toLowerCase() === String(orderId).trim().toLowerCase() &&
+      o.email.toLowerCase() === String(email).trim().toLowerCase()
+  );
+  if (!order) {
+    return res.status(404).json({ error: "Keine Bestellung mit diesen Angaben gefunden." });
+  }
+  res.json({
+    id: order.id,
+    status: order.status,
+    items: order.items,
+    total: order.total,
+    createdAt: order.createdAt,
+  });
+});
+
 // ---- Kategorien (öffentlich lesbar) ----
 router.get("/categories", (req, res) => {
   res.json(readData("categories"));
