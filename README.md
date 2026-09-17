@@ -59,6 +59,39 @@ verloren gehen). Für den Start zum Testen reicht das völlig aus. Sobald der Sh
 
 ---
 
+## 2b. Datenbank einrichten (WICHTIG – sonst gehen Daten verloren!)
+
+Render löscht bei jedem Redeploy (also jedem neuen Datei-Upload auf GitHub) den
+kompletten Dateispeicher deines Web Service. Ohne eine externe Datenbank
+verschwinden dann alle Produkte, Bestellungen, Bewertungen und Gutscheine, die
+du im Dashboard eingetragen hast!
+
+Deshalb nutzt dieses Projekt **MongoDB Atlas** (kostenlose Cloud-Datenbank,
+für diese Shop-Größe dauerhaft gratis):
+
+1. Gehe zu [mongodb.com/cloud/atlas/register](https://www.mongodb.com/cloud/atlas/register)
+   und erstelle ein kostenloses Konto.
+2. Erstelle ein neues **kostenloses Cluster** (M0 Free Tier).
+3. Unter "Database Access": Lege einen Datenbank-Benutzer mit Passwort an
+   (merken oder notieren!).
+4. Unter "Network Access": Klicke "Add IP Address" → "Allow Access from
+   Anywhere" (0.0.0.0/0) – nötig, damit Render zugreifen kann.
+5. Klicke auf "Connect" bei deinem Cluster → "Drivers" → kopiere die
+   angezeigte Connection-String-URL (sieht aus wie
+   `mongodb+srv://benutzer:<password>@cluster0.xxxxx.mongodb.net/...`).
+6. Ersetze `<password>` durch dein echtes Passwort aus Schritt 3.
+7. Trage diese komplette URL bei Render als Environment Variable
+   `MONGODB_URI` ein.
+
+Danach speichert der Shop alle Daten dauerhaft in der Cloud – auch wenn du
+später neue Dateien hochlädst und Render neu deployed, bleiben Produkte,
+Bestellungen usw. erhalten.
+
+⚠️ Ohne `MONGODB_URI` läuft der Shop trotzdem (Fallback auf lokale Dateien),
+aber dann eben mit dem beschriebenen Datenverlust-Risiko bei jedem Redeploy.
+
+---
+
 ## 3. E-Mail-Versand einrichten (SMTP)
 
 Am einfachsten mit einem Gmail-Konto:
