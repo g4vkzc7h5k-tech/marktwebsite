@@ -113,14 +113,16 @@ router.post("/orders/coupon", async (req, res) => {
     orders.push(order);
     writeData("orders", orders);
 
-    await sendOrderReceivedEmail(order).catch((e) =>
+    // Sofort antworten, damit der Button beim Kunden nicht hängen bleibt.
+    // E-Mails laufen im Hintergrund weiter, auch wenn der Versand langsam ist.
+    res.json({ success: true, orderId: order.id });
+
+    sendOrderReceivedEmail(order).catch((e) =>
       console.error("E-Mail-Fehler (Eingangsbestätigung):", e)
     );
-    await sendAdminNewOrderEmail(order).catch((e) =>
+    sendAdminNewOrderEmail(order).catch((e) =>
       console.error("E-Mail-Fehler (Admin-Benachrichtigung):", e)
     );
-
-    res.json({ success: true, orderId: order.id });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Serverfehler bei der Bestellung." });
@@ -170,14 +172,15 @@ router.post("/paypal/capture-order", async (req, res) => {
     orders.push(order);
     writeData("orders", orders);
 
-    await sendOrderReceivedEmail(order).catch((e) =>
+    // Sofort antworten, E-Mails laufen im Hintergrund weiter.
+    res.json({ success: true, orderId: order.id, status: order.status });
+
+    sendOrderReceivedEmail(order).catch((e) =>
       console.error("E-Mail-Fehler (Eingangsbestätigung):", e)
     );
-    await sendAdminNewOrderEmail(order).catch((e) =>
+    sendAdminNewOrderEmail(order).catch((e) =>
       console.error("E-Mail-Fehler (Admin-Benachrichtigung):", e)
     );
-
-    res.json({ success: true, orderId: order.id, status: order.status });
   } catch (e) {
     console.error("PayPal capture-order Fehler:", e);
     res.status(500).json({ error: "Zahlung konnte nicht bestätigt werden." });
