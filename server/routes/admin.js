@@ -166,12 +166,59 @@ router.post("/orders/:id/confirm", async (req, res) => {
   res.json({ success: true });
 });
 
+router.post("/orders/:id/prepare", (req, res) => {
+  const orders = readData("orders");
+  const order = orders.find((o) => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Bestellung nicht gefunden." });
+  order.status = "preparing";
+  writeData("orders", orders);
+  res.json({ success: true });
+});
+
 router.post("/orders/:id/ship", (req, res) => {
   const orders = readData("orders");
   const order = orders.find((o) => o.id === req.params.id);
   if (!order) return res.status(404).json({ error: "Bestellung nicht gefunden." });
   order.status = "shipped";
   writeData("orders", orders);
+  res.json({ success: true });
+});
+
+router.post("/orders/:id/deliver", (req, res) => {
+  const orders = readData("orders");
+  const order = orders.find((o) => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Bestellung nicht gefunden." });
+  order.status = "delivered";
+  writeData("orders", orders);
+  res.json({ success: true });
+});
+
+// ---------- Bewertungen verwalten ----------
+router.get("/reviews", (req, res) => {
+  res.json(readData("reviews"));
+});
+
+router.post("/reviews", (req, res) => {
+  const { category, text, stars } = req.body;
+  if (!category || !text || !stars) {
+    return res.status(400).json({ error: "Kategorie, Text und Sterne sind Pflicht." });
+  }
+  const reviews = readData("reviews");
+  const review = {
+    id: uuidv4().slice(0, 8),
+    category,
+    text,
+    stars: Math.min(5, Math.max(1, Number(stars))),
+  };
+  reviews.push(review);
+  writeData("reviews", reviews);
+  res.json({ success: true, review });
+});
+
+router.delete("/reviews/:id", (req, res) => {
+  let reviews = readData("reviews");
+  reviews = reviews.filter((r) => r.id !== req.params.id);
+  writeData("reviews", reviews);
   res.json({ success: true });
 });
 
