@@ -166,28 +166,58 @@ async function submitCouponOrder() {
     return;
   }
 
-  const res = await fetch("/api/orders/coupon", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email: getCheckoutEmail(),
-      items: getCart(),
-      couponCode: code,
-      shipping: getShippingData(),
-    }),
-  });
-  const result = await res.json();
-  if (result.success) {
-    localStorage.removeItem("cart");
-    updateCartCount();
+  const btn = document.querySelector('#coupon-section button.btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Wird gesendet...";
+  }
+
+  try {
+    const res = await fetch("/api/orders/coupon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: getCheckoutEmail(),
+        items: getCart(),
+        couponCode: code,
+        shipping: getShippingData(),
+      }),
+    });
+
+    let result;
+    try {
+      result = await res.json();
+    } catch (parseErr) {
+      showMessage(
+        `Unerwartete Serverantwort (Status ${res.status}). Bitte prüfe die Render-Logs.`,
+        "error"
+      );
+      return;
+    }
+
+    if (result.success) {
+      localStorage.removeItem("cart");
+      updateCartCount();
+      showMessage(
+        `Bestellung eingegangen! Deine Bestellnummer lautet ${result.orderId}. Wir prüfen deinen Gutschein und bestätigen dir die Bestellung per E-Mail.`,
+        "success"
+      );
+      document.getElementById("cart-items").innerHTML = "";
+      document.getElementById("cart-summary").style.display = "none";
+    } else {
+      showMessage(result.error || "Gutschein konnte nicht eingelöst werden.", "error");
+    }
+  } catch (networkErr) {
+    console.error("Netzwerkfehler beim Senden der Bestellung:", networkErr);
     showMessage(
-      `Bestellung eingegangen! Deine Bestellnummer lautet ${result.orderId}. Wir prüfen deinen Gutschein und bestätigen dir die Bestellung per E-Mail.`,
-      "success"
+      "Verbindung zum Server fehlgeschlagen. Bitte Internetverbindung prüfen und erneut versuchen.",
+      "error"
     );
-    document.getElementById("cart-items").innerHTML = "";
-    document.getElementById("cart-summary").style.display = "none";
-  } else {
-    showMessage(result.error || "Gutschein konnte nicht eingelöst werden.", "error");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Mit Gutschein bezahlen";
+    }
   }
 }
 
