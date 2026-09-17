@@ -57,11 +57,17 @@ function formatItems(items) {
     </table>`;
 }
 
+function greetingName(order) {
+  const name = order.shipping && order.shipping.name ? order.shipping.name.trim() : "";
+  return name ? name.split(" ")[0] : null;
+}
+
 async function sendOrderReceivedEmail(order) {
+  const name = greetingName(order);
   const html = baseLayout(`
     <h2 style="margin-top:0; color:#1a1a1a;">Danke für deine Bestellung!</h2>
     <p style="color:#444; line-height:1.6;">
-      Hallo,<br/><br/>
+      ${name ? `Hallo ${name},` : "Hallo,"}<br/><br/>
       wir haben deine Bestellung <strong>#${order.id}</strong> erhalten und bearbeiten sie schnellstmöglich.
       ${
         order.paymentMethod === "coupon"
@@ -91,10 +97,11 @@ async function sendOrderReceivedEmail(order) {
 }
 
 async function sendOrderConfirmedEmail(order) {
+  const name = greetingName(order);
   const html = baseLayout(`
     <h2 style="margin-top:0; color:#1a1a1a;">Deine Bestellung wurde bestätigt ✅</h2>
     <p style="color:#444; line-height:1.6;">
-      Hallo,<br/><br/>
+      ${name ? `Hallo ${name},` : "Hallo,"}<br/><br/>
       gute Nachrichten! Deine Zahlung für Bestellung <strong>#${order.id}</strong> wurde erfolgreich bestätigt
       und deine Bestellung wird nun vorbereitet und versendet.
     </p>
