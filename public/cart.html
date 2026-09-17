@@ -57,6 +57,15 @@
         </div>
 
         <div id="coupon-section" style="display:none;">
+          <!--
+            HINWEIS: Diesen Text kannst du frei anpassen.
+            Er erscheint direkt über dem Gutscheincode-Feld.
+          -->
+          <p style="font-size:13px;font-weight:600;background:#fdf1d6;color:#96700c;padding:10px 12px;border-radius:8px;margin-bottom:12px;">
+            ⚠️ Der Gutscheincode muss von uns (diesem Shop) ausgegeben worden sein.
+            Codes von anderen Anbietern oder Seiten werden nicht akzeptiert.
+          </p>
+
           <label for="coupon-code">Gutscheincode</label>
           <input type="text" id="coupon-code" placeholder="z. B. GUTSCHEIN-1234">
           <button class="btn" style="width:100%;" onclick="submitCouponOrder()">Mit Gutschein bezahlen</button>
